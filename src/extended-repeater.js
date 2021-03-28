@@ -1,15 +1,19 @@
 const CustomError = require("../extensions/custom-error");
 
   module.exports = function repeater( str, options ) {
-    
+
       if (options.separator === undefined) {
         options.separator = '+';
       }
       if (options.addition === undefined) {
-        options.addition = '';
+        options.addition = '' ;
       } 
+      if (options.additionSeparator === undefined) {
+        options.additionSeparator = '|';
+      }
+      
       let st = options.addition;
-      for (let y = 1; y < options.additionRepeatTimes; y++) {
+      for (let x = 1; x < options.additionRepeatTimes; x++) {
         st = st + options.additionSeparator + options.addition;
       }
       let newSt = str + st;
