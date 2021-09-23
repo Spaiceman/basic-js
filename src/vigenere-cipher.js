@@ -20,63 +20,88 @@ import { NotImplementedError } from "../extensions/index.js";
  *
  */
 export default class VigenereCipheringMachine {
-  encrypt() {
-    text = text.toUpperCase();
-    key = key.toUpperCase();
-    if (text === undefined || key === undefined) {
-      throw Error();
+  constructor(reverse) {
+    this.reverse = reverse;
+  }
+  encrypt(message, key) {
+    if (!message || !key) throw new Error(`Incorrect arguments!`);
+
+    //build array with eng alphabet
+    let alphabet = [];
+    for (let i = 65; i < 91; i++) {
+      alphabet.push(String.fromCharCode(i));
     }
 
-    if (text.length > key.length) {
-      let numberRepeat = Math.ceil(text.length / key.length);
-      key = key.repeat(numberRepeat).slice(0, text.length);
-    }
-    let alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let array = [];
-    let kf = 0;
-    for (let i = 0; i < text.length; i++) {
-      let m = alph.indexOf(text[i]);
-      let k = alph.indexOf(key[i - kf]);
-      let resIndex = m + k;
-      if (m === -1 || text[i] === " ") {
-        array.push(text[i]);
-        kf++;
-      } else {
-        array.push(alph[resIndex]);
+    // reformat params
+    let m = message.toUpperCase().split("");
+    let k = key.toUpperCase().split("");
+
+    // calculate result
+    let result = [];
+    let j = 0;
+
+    for (let i = 0; i < m.length; i++) {
+      // if symbol isn't a letter, just add it and go on
+      if (alphabet.indexOf(m[i]) === -1) {
+        result.push(m[i]);
+        continue;
       }
+
+      let sum = alphabet.indexOf(m[i]) + alphabet.indexOf(k[j]);
+      let finIndex = -1;
+
+      if (alphabet.length - 1 - sum < 0) {
+        finIndex = Math.abs(alphabet.length - 1 - sum) - 1;
+      } else {
+        finIndex = sum;
+      }
+
+      result.push(alphabet[finIndex]);
+
+      j++;
+      if (j === k.length) j = 0;
     }
-    if (this.name) {
-      return array.join("");
-    }
-    return array.reverse().join("");
+
+    return this.reverse === false ? result.reverse().join("") : result.join("");
   }
-  decrypt() {
-    if (encryptedtext === undefined || key === undefined) {
-      throw Error();
+  decrypt(message, key) {
+    if (!message || !key) throw new Error(`Incorrect arguments!`);
+
+    //build array with eng alphabet
+    let alphabet = [];
+    for (let i = 65; i < 91; i++) {
+      alphabet.push(String.fromCharCode(i));
     }
-    encryptedtext = encryptedtext.toUpperCase();
-    key = key.toUpperCase();
-    if (encryptedtext.length > key.length) {
-      let numberRepeat = Math.ceil(encryptedtext.length / key.length);
-      key = key.repeat(numberRepeat).slice(0, encryptedtext.length);
-    }
-    let alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let mass = [];
-    let kf = 0;
-    for (let i = 0; i < encryptedtext.length; i++) {
-      let c = alph.indexOf(encryptedtext[i]);
-      let k = alph.indexOf(key[i - kf]);
-      let resIndex = c + 26 - k;
-      if (c === -1 || encryptedtext[i] === " ") {
-        mass.push(encryptedtext[i]);
-        kf++;
-      } else {
-        mass.push(alph[resIndex]);
+
+    // reformat params
+    let m = message.toUpperCase().split("");
+    let k = key.toUpperCase().split("");
+
+    // calculate result
+    let result = [];
+    let j = 0;
+
+    for (let i = 0; i < m.length; i++) {
+      // if symbol isn't a letter, just add it and go on
+      if (alphabet.indexOf(m[i]) === -1) {
+        result.push(m[i]);
+        continue;
       }
+
+      let mI = alphabet.indexOf(m[i]);
+      let kI = alphabet.indexOf(k[j]);
+
+      let finIndex = 1 + (mI > kI) ? mI - kI : kI - mI;
+      if (finIndex < 0) {
+        finIndex = alphabet.length + finIndex;
+      }
+
+      result.push(alphabet[finIndex]);
+
+      j++;
+      if (j === k.length) j = 0;
     }
-    if (this.name) {
-      return mass.join("");
-    }
-    return mass.reverse().join("");
+
+    return this.reverse === false ? result.reverse().join("") : result.join("");
   }
 }
